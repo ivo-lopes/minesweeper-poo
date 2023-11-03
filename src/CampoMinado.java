@@ -1,4 +1,5 @@
 import java.util.Random;
+import java.util.Scanner;
 
 public class CampoMinado {
     private int tamanhoTabuleiro;
@@ -46,6 +47,54 @@ public class CampoMinado {
             }
         }
     }
+    // Imprime a representação textual do jogo
+    public String printTabuleiro() {
+    	StringBuilder board = new StringBuilder();
+    	
+    	board.append("   ");
+    	for( int col = 0; col < tamanhoTabuleiro; col++) {
+    		board.append(String.format(" %02d", col));
+    	}
+    	board.append("\n");
+    	
+    	board.append("  ");
+    	for(int col = 0; col < tamanhoTabuleiro; col++) {
+    		board.append("----");
+    	}
+    	board.append("-\n");
+    	
+    	
+    	for(int row = 0; row < tamanhoTabuleiro; row++) {
+    		board.append(String.format("%02d | ", row));
+    		for(int col = 0; col < tamanhoTabuleiro; col++) {
+    			Celula celula = tabuleiro[row][col];
+    			if(celula.isAberta()) {
+    				if(celula instanceof CelulaBomba) {
+    					board.append("X  ");
+    				}else if(celula instanceof CelulaVazia) {
+    					int valor = ((CelulaVazia) celula).getValor();
+    					if(valor > 0) {
+    						board.append(String.format("%02d ", valor));
+    					}else {
+    						board.append("   ");
+    					}
+    				}
+    			}else if(celula.isMarcada()) {
+    				board.append("M ");
+    			}else {
+    				board.append("#  ");
+    			}
+    		}
+    		board.append("|\n");
+    	}
+    	
+    	board.append("  ");
+    	for(int col = 0; col < tamanhoTabuleiro; col++) {
+    		board.append("----");
+    	}
+    	board.append("-\n");
+    	return board.toString();
+    }
 
     private int calcularValorCelula(int linha, int coluna) {
         // Lógica para calcular o valor da célula com base nas minas vizinhas
@@ -60,11 +109,27 @@ public class CampoMinado {
     }
 
     public boolean verificarVitoria() {
-        return false;
+    	for(int linha = 0; linha < tamanhoTabuleiro; linha++) {
+    		for(int coluna = 0; coluna < tamanhoTabuleiro; coluna++) {
+    			Celula celula = tabuleiro [linha][coluna];
+    			if(!(celula.isAberta()) && !(celula instanceof CelulaBomba)){
+    				return false;
+    			}
+    		}
+    	}
+		return true;
     }
 
     public boolean verificarDerrota() {
-        return false;
+    	for(int linha = 0; linha < tamanhoTabuleiro; linha++) {
+    		for(int coluna = 0; coluna < tamanhoTabuleiro; coluna++) {
+    			Celula celula = tabuleiro [linha][coluna];
+    			if(celula.isAberta() && celula instanceof CelulaBomba) {
+    				return true;
+    			}
+    		}
+    	}
+		return false;
     }
 
     public void abrirCelula(int linha, int coluna) {
@@ -90,5 +155,51 @@ public class CampoMinado {
 
     private void abrirCelulasVizinhas(int linha, int coluna) {
         // Lógica para abrir células vizinhas recursivamente
+    }
+    public static void main(String[] args) {
+        int tamanhoTabuleiro = 8;
+        int numMinas = 10;
+        
+        Scanner scan = new Scanner(System.in);
+        
+        boolean[][]celulasSelecionadas = new boolean [tamanhoTabuleiro][tamanhoTabuleiro];
+        CampoMinado campoMinado = new CampoMinado(tamanhoTabuleiro, numMinas);
+        String initialBoard = campoMinado.printTabuleiro();
+        System.out.println(initialBoard);
+        
+        while(true) {
+        	System.out.println("Digite a linha: (0-" + (tamanhoTabuleiro - 1) + ")");
+        	int row = scan.nextInt();
+        	System.out.println("Digite a coluna: (0-" + (tamanhoTabuleiro - 1) + ")");
+        	int col = scan.nextInt();
+        	
+        	if(row < 0 || row >= tamanhoTabuleiro || col < 0 || col >= tamanhoTabuleiro) {
+        		System.out.println();
+        		System.out.println("Linha ou coluna inválida");
+        		continue;
+        	}
+        	
+        	if(celulasSelecionadas[row][col]) {
+        		System.out.println();
+        		System.out.println("Você já selecionou essa célula!");
+        	}
+        	celulasSelecionadas[row][col] = true;
+        	campoMinado.abrirCelula(row, col);
+        	String novoTabuleiro = campoMinado.printTabuleiro();
+        	System.out.println();
+        	System.out.println(novoTabuleiro);
+        	
+        	if(campoMinado.verificarDerrota()) {
+        		System.out.println();
+        		System.out.println("O jogo acabou! Você atingiu uma bomba!");
+        		break;
+        	}
+        	if(campoMinado.verificarVitoria()) {
+        		System.out.println();
+        		System.out.println("Parabéns você venceu!");
+        		break;
+        	}
+       }
+        scan.close();    
     }
 }
