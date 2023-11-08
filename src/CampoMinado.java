@@ -97,8 +97,24 @@ public class CampoMinado {
     }
 
     private int calcularValorCelula(int linha, int coluna) {
-        // Lógica para calcular o valor da célula com base nas minas vizinhas
-        return 0; 
+        if(!(tabuleiro[linha][coluna] instanceof CelulaBomba)){
+        	int valor = 0;
+        	
+        	for(int i = -1; i <= 1; i++) {
+        		for(int j = -1; j <= 1; j++) {
+        			int novaLinha = linha + i;
+        			int novaColuna = coluna + j;
+        			
+        			if(novaLinha >= 0 && novaLinha < tamanhoTabuleiro && novaColuna >=0 && novaColuna < tamanhoTabuleiro) {
+        				if(tabuleiro[novaLinha][novaColuna] instanceof CelulaBomba) {
+        					valor++;
+        				}
+        			}
+        		}
+        	}
+        	return valor;
+        }
+        return 0;
     }
 
     public void marcarCelula(int linha, int coluna) {
@@ -117,7 +133,7 @@ public class CampoMinado {
     			}
     		}
     	}
-		return true;
+	return true;
     }
 
     public boolean verificarDerrota() {
@@ -147,15 +163,28 @@ public class CampoMinado {
             if (((CelulaVazia) celula).getValor() == 0) {
                 abrirCelulasVizinhas(linha, coluna);
             }
-            if (verificarVitoria()) {
-                // A adicionar
-            }
         }
     }
 
     private void abrirCelulasVizinhas(int linha, int coluna) {
-        // Lógica para abrir células vizinhas recursivamente
-    }
+        for(int i = -1; i <= 1 ; i++) {
+        	for(int j = -1; j <= 1; j++) {
+        		int novaLinha = linha + i;
+        		int novaColuna = coluna + j;
+        		
+        		if(novaLinha >= 0 && novaLinha < tamanhoTabuleiro && novaColuna >= 0 && novaColuna < tamanhoTabuleiro) {
+        			Celula celula = tabuleiro[novaLinha][novaColuna];
+        			
+        			if(!celula.isAberta() && !(celula instanceof CelulaBomba)) {
+        				celula.setAberta(true);
+        			if(((CelulaVazia) celula).getValor() == 0) {
+                                   abrirCelulasVizinhas(novaLinha, novaColuna);
+                    }
+        		}
+        	}
+        }
+      }
+   }
     public static void main(String[] args) {
         int tamanhoTabuleiro = 8;
         int numMinas = 10;
