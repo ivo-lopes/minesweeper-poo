@@ -133,19 +133,40 @@ public class CampoMinado {
     			}
     		}
     	}
+	revelarTabuleiro();
 	return true;
     }
 
+    public void revelarTabuleiro() {
+    	for(int linha = 0; linha < tamanhoTabuleiro; linha++) {
+    		for(int coluna= 0; coluna < tamanhoTabuleiro; coluna++) {
+    			tabuleiro[linha][coluna].setAberta(true);
+    		}
+    	}
+    }
+	
     public boolean verificarDerrota() {
     	for(int linha = 0; linha < tamanhoTabuleiro; linha++) {
     		for(int coluna = 0; coluna < tamanhoTabuleiro; coluna++) {
     			Celula celula = tabuleiro [linha][coluna];
     			if(celula.isAberta() && celula instanceof CelulaBomba) {
+				revelarBombas();
     				return true;
     			}
     		}
     	}
 		return false;
+    }
+
+    public void revelarBombas() {
+    	for(int linha = 0; linha < tamanhoTabuleiro; linha++) {
+    		for(int coluna= 0; coluna < tamanhoTabuleiro; coluna++) {
+    			Celula celula = tabuleiro[linha][coluna];
+    			if(celula instanceof CelulaBomba) {
+    			   celula.setAberta(true);
+    			}
+    		}
+    	}
     }
 
     public void abrirCelula(int linha, int coluna) {
