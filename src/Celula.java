@@ -34,14 +34,5 @@ class CelulaVazia extends Celula {
 class CelulaBomba extends Celula {
 }
 
-class CelulaVizinha extends Celula {
-    private int valor;  // Número de minas vizinhas
-
-    public int getValor() {
-        return valor;
-    }
-
-    public void setValor(int valor) {
-        this.valor = valor;
-    }
+class CelulaVizinha extends CelulaVazia {
 }
