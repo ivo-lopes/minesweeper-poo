@@ -32,20 +32,23 @@ public class CampoMinadoGUI extends JFrame {
                 final int finalLinha = linha;
                 final int finalColuna = coluna;
 
-                botao.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        if (!campoMinado.getTabuleiro()[finalLinha][finalColuna].isAberta()) {
-                            campoMinado.abrirCelula(finalLinha, finalColuna);
+                botao.addMouseListener(new MouseAdapter() {
+                    public void mouseClicked(MouseEvent e) {
+                    	Celula celulaClicada = campoMinado.getTabuleiro()[finalLinha][finalColuna];
+                        if (SwingUtilities.isRightMouseButton(e)) {
+                            celulaClicada.setMarcada(!celulaClicada.isMarcada());
                             atualizarTabuleiro();
-                            if (campoMinado.verificarVitoria()) {
-                                JOptionPane.showMessageDialog(null, "Você venceu!");
-                            } else if (campoMinado.verificarDerrota()) {
-                                JOptionPane.showMessageDialog(null, "Você perdeu!");
-                            }
-                        }
-                    }
-                });
+                        } else if (SwingUtilities.isLeftMouseButton(e) && !celulaClicada.isAberta()) {
+                                        campoMinado.abrirCelula(finalLinha, finalColuna);
+                                        atualizarTabuleiro();
+                                        if (campoMinado.verificarVitoria()) {
+                                            JOptionPane.showMessageDialog(null, "Você venceu!");
+                                        } else if (campoMinado.verificarDerrota()) {
+                                            JOptionPane.showMessageDialog(null, "Você perdeu!");
+                                        }
+                                    }
+                                }
+                            });
 
                 add(botao);
             }
@@ -79,11 +82,11 @@ public class CampoMinadoGUI extends JFrame {
         }
     }
 
-    /*public static void main(String[] args) {
+    public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             int tamanhoTabuleiro = 8;
             int numMinas = 10;
             new CampoMinadoGUI(tamanhoTabuleiro, numMinas);
         });
-    }*/
+    }
 }
