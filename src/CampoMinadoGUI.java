@@ -1,9 +1,18 @@
+package minesweeper.tabuleiro;
+
 import javax.swing.*;
+import minesweeper.celulas.Celula;
+import minesweeper.celulas.CelulaVazia;
+
+import java.awt.event.MouseEvent;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 
 public class CampoMinadoGUI extends JFrame {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
     private CampoMinado campoMinado;
     private JButton[][] botoes;
     private int tamanhoTabuleiro;
@@ -35,9 +44,11 @@ public class CampoMinadoGUI extends JFrame {
                 botao.addMouseListener(new MouseAdapter() {
                     public void mouseClicked(MouseEvent e) {
                     	Celula celulaClicada = campoMinado.getTabuleiro()[finalLinha][finalColuna];
-                        if (SwingUtilities.isRightMouseButton(e)) {
-                            celulaClicada.setMarcada(!celulaClicada.isMarcada());
-                            atualizarTabuleiro();
+                        if (SwingUtilities.isRightMouseButton(e)) { 
+                        	if(!celulaClicada.isAberta()) {
+                        		celulaClicada.setMarcada(!celulaClicada.isMarcada());
+                                atualizarTabuleiro();
+                        	}
                         } else if (SwingUtilities.isLeftMouseButton(e) && !celulaClicada.isAberta()) {
                                         campoMinado.abrirCelula(finalLinha, finalColuna);
                                         atualizarTabuleiro();
@@ -48,7 +59,7 @@ public class CampoMinadoGUI extends JFrame {
                                         }
                                     }
                                 }
-                            });
+                        });
 
                 add(botao);
             }
@@ -63,7 +74,7 @@ public class CampoMinadoGUI extends JFrame {
 
                 if (celula.isAberta()) {
                     botao.setEnabled(false);
-                    if (celula instanceof CelulaBomba) {
+                    if (celula.isBomba()) {
                         botao.setText("X"); // Mostra uma mina
                     } else if (celula instanceof CelulaVazia) {
                         int valor = ((CelulaVazia) celula).getValor();
