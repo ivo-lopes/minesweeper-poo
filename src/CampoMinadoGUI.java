@@ -16,6 +16,8 @@ public class CampoMinadoGUI extends JFrame {
     private CampoMinado campoMinado;
     private JButton[][] botoes;
     private int tamanhoTabuleiro;
+    private JLabel timer;
+    private GameTimer gameTimer;
 
     public CampoMinadoGUI(int tamanhoTabuleiro, int numMinas) {
         this.tamanhoTabuleiro = tamanhoTabuleiro;
@@ -25,12 +27,16 @@ public class CampoMinadoGUI extends JFrame {
         setTitle("Campo Minado");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(400, 400);
-        setLayout(new GridLayout(tamanhoTabuleiro, tamanhoTabuleiro));
-
-        criarBotoes();
+        JPanel gamePanel = new JPanel(new GridLayout(tamanhoTabuleiro, tamanhoTabuleiro));
+        panel.add(gamePanel, BorderLayout.CENTER);
+        criarBotoes(gamePanel);
+        
         atualizarTabuleiro();
-
+        getContentPane().add(panel);
         setVisible(true);
+        
+        gameTimer = new GameTimer(timer);
+        gameTimer.execute();
     }
 
     private void criarBotoes() {
@@ -61,7 +67,7 @@ public class CampoMinadoGUI extends JFrame {
                                 }
                         });
 
-                add(botao);
+                gamePanel.add(botao);
             }
         }
     }
