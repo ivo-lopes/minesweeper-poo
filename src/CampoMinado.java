@@ -9,6 +9,10 @@ public class CampoMinado {
     private int tamanhoTabuleiro;
     private int numMinas;
     private Celula[][] tabuleiro;
+    private long startPlayer1;
+    private long endPlayer1;
+    private long startPlayer2;
+    private long endPlayer2;
 
     public CampoMinado(int tamanhoTabuleiro, int numMinas) {
         this.tamanhoTabuleiro = tamanhoTabuleiro;
@@ -19,6 +23,41 @@ public class CampoMinado {
 
     public Celula[][] getTabuleiro() {
         return tabuleiro;
+    }
+
+    public void startPlayer1() {
+    	startPlayer1 = System.currentTimeMillis();
+    }
+    
+    public void endPlayer1() {
+        endPlayer1 = System.currentTimeMillis();
+    }
+    
+    public void startPlayer2() {
+    	startPlayer2 = System.currentTimeMillis();
+    }
+
+    public void endPlayer2() {
+        endPlayer2 = System.currentTimeMillis();
+        vencedor();
+    }
+    
+    public void vencedor() {
+        if (endPlayer1 == 0 || endPlayer2 == 0) {
+            // Não faz a verificação se um dos jogadores ainda não terminou
+            return;
+        }
+
+        long tempoPlayer1 = endPlayer1 - startPlayer1;
+        long tempoPlayer2 = endPlayer2 - startPlayer2;
+
+        if (tempoPlayer1 < tempoPlayer2) {
+            JOptionPane.showMessageDialog(null, "Jogador 1 venceu com " + tempoPlayer1 + " milissegundos!");
+        } else if (tempoPlayer1 > tempoPlayer2) {
+            JOptionPane.showMessageDialog(null, "Jogador 2 venceu com " + tempoPlayer2 + " milissegundos!");
+        } else {
+            JOptionPane.showMessageDialog(null, "Empate!");
+        }
     }
 
     private void inicializarJogo() {
