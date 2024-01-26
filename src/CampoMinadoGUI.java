@@ -6,6 +6,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -14,7 +15,7 @@ import javax.swing.SwingUtilities;
 
 import minesweeper.celulas.Celula;
 import minesweeper.celulas.CelulaVazia;
-
+import minesweeper.niveis.*;
 public class CampoMinadoGUI extends JFrame implements Tabuleiro{
 	/**
 	 * 
@@ -28,6 +29,7 @@ public class CampoMinadoGUI extends JFrame implements Tabuleiro{
     private boolean campoMinadoMalucoAtivo;
 	private int numMinas;
 	private boolean jogoEncerrado = false;
+	private JComboBox<String> comboBoxDificuldade;
 
 
     public CampoMinadoGUI(int tamanhoTabuleiro, int numMinas) {
@@ -35,7 +37,24 @@ public class CampoMinadoGUI extends JFrame implements Tabuleiro{
         this.campoMinado = new CampoMinado(tamanhoTabuleiro, numMinas);
         this.botoes = new JButton[tamanhoTabuleiro][tamanhoTabuleiro];
         
+        String[] niveis = {"Fácil", "Intermediário", "Difícil"};
+        comboBoxDificuldade = new JComboBox<>(niveis);
         JPanel panel = new JPanel(new BorderLayout());
+        panel.add(comboBoxDificuldade, BorderLayout.WEST);
+
+        comboBoxDificuldade.addActionListener(e ->  configurarJogo());;
+        
+        JButton iniciarJogo = new JButton("Iniciar Jogo");
+        panel.add(iniciarJogo, BorderLayout.EAST);
+        
+        iniciarJogo.addActionListener(e -> {
+            configurarJogo();
+            reiniciarJogo();
+            atualizarTitulo();
+            iniciarTimer();
+        });
+
+      
         timer = new JLabel("Tempo: ");
         panel.add(timer, BorderLayout.NORTH);
         
@@ -65,7 +84,26 @@ public class CampoMinadoGUI extends JFrame implements Tabuleiro{
 
     }
     
-    private void iniciarTimer() {
+    private void configurarJogo() {
+        String selectedNivel = (String) comboBoxDificuldade.getSelectedItem();
+        switch (selectedNivel) {
+            case "Fácil":
+                tamanhoTabuleiro = new Facil().getTamanhoTabuleiro();
+                numMinas = new Facil().getNumMinas();
+                break;
+            case "Intermediário":
+                tamanhoTabuleiro = new Intermediario().getTamanhoTabuleiro();
+                numMinas = new Intermediario().getNumMinas();
+                break;
+            case "Difícil":
+                tamanhoTabuleiro = new Dificil().getTamanhoTabuleiro();
+                numMinas = new Dificil().getNumMinas();
+                break;
+        }
+    }
+   
+    
+    public void iniciarTimer() {
         gameTimer = new GameTimer(timer);
         gameTimer.execute();
     }
