@@ -4,6 +4,9 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -30,12 +33,16 @@ public class CampoMinadoGUI extends JFrame implements Tabuleiro{
 	private int numMinas;
 	private boolean jogoEncerrado = false;
 	private JComboBox<String> comboBoxDificuldade;
+	private String nomeJogador;
+	private Recorde recorde;
 
 
-    public CampoMinadoGUI(int tamanhoTabuleiro, int numMinas) {
+    public CampoMinadoGUI(int tamanhoTabuleiro, int numMinas, String nomeJogador) {
+    	this.nomeJogador = nomeJogador;
         this.tamanhoTabuleiro = tamanhoTabuleiro;
         this.campoMinado = new CampoMinado(tamanhoTabuleiro, numMinas);
         this.botoes = new JButton[tamanhoTabuleiro][tamanhoTabuleiro];
+        this.recorde = new Recorde();
         
         String[] niveis = {"Fácil", "Intermediário", "Difícil"};
         comboBoxDificuldade = new JComboBox<>(niveis);
@@ -84,7 +91,7 @@ public class CampoMinadoGUI extends JFrame implements Tabuleiro{
 
     }
     
-    private void configurarJogo() {
+    void configurarJogo() {
         String selectedNivel = (String) comboBoxDificuldade.getSelectedItem();
         switch (selectedNivel) {
             case "Fácil":
@@ -101,7 +108,6 @@ public class CampoMinadoGUI extends JFrame implements Tabuleiro{
                 break;
         }
     }
-   
     
     public void iniciarTimer() {
         gameTimer = new GameTimer(timer);
@@ -126,7 +132,7 @@ public class CampoMinadoGUI extends JFrame implements Tabuleiro{
         
         atualizarTabuleiro();
     } catch (ValorInvalidoException e) {
-        // Handle ValorInvalidoException (e.g., log it, show a message to the user)
+       System.out.println("Valor inválido");
     }
   }
     
@@ -211,12 +217,45 @@ public class CampoMinadoGUI extends JFrame implements Tabuleiro{
             jogoEncerrado = true;
             gameTimer.pararTimer();
             JOptionPane.showMessageDialog(null, "Você perdeu!");
+            salvarPontuacao(nomeJogador, gameTimer.getTempoDecorrido(), false);
+            exibirRecorde();
         } else if (campoMinado.verificarVitoria()) {
             jogoEncerrado = true;
             gameTimer.pararTimer();
             JOptionPane.showMessageDialog(null, "Você venceu!");
+            salvarPontuacao(nomeJogador, gameTimer.getTempoDecorrido(), true);
+            exibirRecorde();
         }
     }
+	
+	private void salvarPontuacao(String nomeJogador, long tempoDecorrido, boolean venceu) {
+	    recorde.adicionarPontuacao(nomeJogador, tempoDecorrido, !venceu);
+    }
+	
+	private void exibirRecorde() {
+	    List<Pontuacao> todasPontuacoes = this.recorde.getPontuacoes();
+	    List<Pontuacao> pontuacoesValidas = new ArrayList<>(); 
+	    
+	    for (Pontuacao pontuacao : todasPontuacoes) {
+	        if (pontuacao.isVenceu()) { 
+	            pontuacoesValidas.add(pontuacao);
+	        }
+	    }
+	    
+	    todasPontuacoes.sort(Comparator.comparingLong(Pontuacao::getTempo).reversed());
+	    
+	    StringBuilder message = new StringBuilder("Top 10 Pontuações:\n");
+	    int count = 0;
+	    for (Pontuacao pontuacao : todasPontuacoes) {
+	        message.append(count + 1).append(". ").append(pontuacao.getNomeJogador()).append(": ").append(pontuacao.getTempo()).append(" segundos\n");
+	        count++;
+	        
+	        if (count >= 10) {
+	            break; 
+	        }
+	    }
+	    JOptionPane.showMessageDialog(null, message.toString(), "Recorde", JOptionPane.INFORMATION_MESSAGE);
+	}
 	
     private void atualizarTabuleiro() {
         for (int linha = 0; linha < tamanhoTabuleiro; linha++) {
@@ -229,17 +268,17 @@ public class CampoMinadoGUI extends JFrame implements Tabuleiro{
                 } else if (celula.isAberta()) {
                 	botao.setEnabled(false);
                     if (celula.isBomba()) {
-                        botao.setText("X"); // Mostra uma mina
+                        botao.setText("X"); 
                     } else if (celula instanceof CelulaVazia) {
                         int valor = ((CelulaVazia) celula).getValor();
                         if (valor > 0) {
-                            botao.setText(String.valueOf(valor)); // Mostra o valor das células vizinhas
+                            botao.setText(String.valueOf(valor));
                         } else {
-                            botao.setText(""); // Célula vazia
+                            botao.setText(""); 
                         }
                     }
                 } else if (celula.isMarcada()) {
-                	botao.setText("M");// Marcação de possível mina
+                	botao.setText("M");
                 } else {
                     botao.setText("");
                 }
@@ -251,7 +290,7 @@ public class CampoMinadoGUI extends JFrame implements Tabuleiro{
         SwingUtilities.invokeLater(() -> {
             int tamanhoTabuleiro = 8;
             int numMinas = 10;
-            new CampoMinadoGUI(tamanhoTabuleiro, numMinas);
+            new CampoMinadoGUI(tamanhoTabuleiro, numMinas, "");
         });
     }
 
@@ -269,37 +308,45 @@ public class CampoMinadoGUI extends JFrame implements Tabuleiro{
 
 	@Override
 	public void marcarCelula(int linha, int coluna) {
-		// TODO Auto-generated method stub
+		 campoMinado.marcarCelula(linha, coluna);
+		 atualizarTabuleiro();
 		
 	}
 
 	@Override
 	public boolean verificarVitoria() {
-		// TODO Auto-generated method stub
-		return false;
+		return campoMinado.verificarVitoria();
 	}
 
 	@Override
 	public void revelarTabuleiro() {
-		// TODO Auto-generated method stub
+		campoMinado.revelarTabuleiro();
+	    atualizarTabuleiro();
 		
 	}
 
 	@Override
 	public boolean verificarDerrota() {
-		// TODO Auto-generated method stub
-		return false;
+		return campoMinado.verificarDerrota();
 	}
 
 	@Override
 	public void abrirCelula(int linha, int coluna) {
-		// TODO Auto-generated method stub
+		campoMinado.abrirCelula(linha, coluna);
+	    atualizarTabuleiro();
 		
 	}
 
 	@Override
 	public void notificarMudancaVizinhos(int linha, int coluna) {
-		// TODO Auto-generated method stub
+		campoMinado.notificarMudancaVizinhos(linha, coluna);
+	    atualizarTabuleiro();
+		
+	}
+
+	@Override
+	public void distribuirMinas(int linhaClicada, int colunaClicada) {
+		campoMinado.distribuirMinas(linhaClicada, colunaClicada);
 		
 	}
 
