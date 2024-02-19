@@ -259,4 +259,9 @@ public class CampoMinado implements Tabuleiro {
             }
         }
     }
+    @Override
+	public void distribuirMinas(int linhaClicada, int colunaClicada) {
+		// TODO Auto-generated method stub
+		
+	}
 }
