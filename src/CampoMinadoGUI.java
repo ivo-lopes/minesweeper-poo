@@ -4,9 +4,11 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.Comparator;
+//import java.util.ArrayList;
+//import java.util.Collections;
+//import java.util.Comparator;
 import java.util.List;
+//import java.util.PriorityQueue;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -14,6 +16,9 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 
 import minesweeper.celulas.Celula;
@@ -49,18 +54,7 @@ public class CampoMinadoGUI extends JFrame implements Tabuleiro{
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(comboBoxDificuldade, BorderLayout.WEST);
 
-        comboBoxDificuldade.addActionListener(e ->  configurarJogo());;
-        
-        JButton iniciarJogo = new JButton("Iniciar Jogo");
-        panel.add(iniciarJogo, BorderLayout.EAST);
-        
-        iniciarJogo.addActionListener(e -> {
-            configurarJogo();
-            reiniciarJogo();
-            atualizarTitulo();
-            iniciarTimer();
-        });
-
+        comboBoxDificuldade.addActionListener(e ->  configurarJogo());
       
         timer = new JLabel("Tempo: ");
         panel.add(timer, BorderLayout.NORTH);
@@ -229,33 +223,50 @@ public class CampoMinadoGUI extends JFrame implements Tabuleiro{
     }
 	
 	private void salvarPontuacao(String nomeJogador, long tempoDecorrido, boolean venceu) {
-	    recorde.adicionarPontuacao(nomeJogador, tempoDecorrido, !venceu);
+	    recorde.adicionarPontuacao(nomeJogador, tempoDecorrido, venceu);
     }
 	
-	private void exibirRecorde() {
-	    List<Pontuacao> todasPontuacoes = this.recorde.getPontuacoes();
-	    List<Pontuacao> pontuacoesValidas = new ArrayList<>(); 
-	    
-	    for (Pontuacao pontuacao : todasPontuacoes) {
-	        if (pontuacao.isVenceu()) { 
-	            pontuacoesValidas.add(pontuacao);
-	        }
-	    }
-	    
-	    todasPontuacoes.sort(Comparator.comparingLong(Pontuacao::getTempo).reversed());
-	    
-	    StringBuilder message = new StringBuilder("Top 10 Pontuações:\n");
-	    int count = 0;
-	    for (Pontuacao pontuacao : todasPontuacoes) {
-	        message.append(count + 1).append(". ").append(pontuacao.getNomeJogador()).append(": ").append(pontuacao.getTempo()).append(" segundos\n");
-	        count++;
+	public class RecordeFrame extends JFrame {
+
+	    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public RecordeFrame(String mensagem) {
+	        setTitle("Recorde");
+	        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+	        setSize(400, 300); 
+	        setLocationRelativeTo(null); 
+
+	        JTextArea textArea = new JTextArea();
+	        textArea.setEditable(false); 
+
+	        JScrollPane scrollPane = new JScrollPane(textArea);
+	        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 	        
-	        if (count >= 10) {
-	            break; 
-	        }
+
+	        textArea.setText(mensagem);
+	        getContentPane().add(scrollPane, BorderLayout.CENTER);
+
+	        setVisible(true);
+	        
 	    }
-	    JOptionPane.showMessageDialog(null, message.toString(), "Recorde", JOptionPane.INFORMATION_MESSAGE);
 	}
+	private void exibirRecorde() {
+		List<Pontuacao> top10 = recorde.getTop10Pontuacoes();
+		  
+		  StringBuilder message = new StringBuilder("Top 10 Pontuações:\n");
+
+		  for(int i = 0; i < top10.size(); i++) {
+		    Pontuacao pontuacao = top10.get(i);
+		    message.append(i+1).append(". ").append(pontuacao.getNomeJogador())
+		      .append(": ").append(pontuacao.getTempo()).append(" segundos\n");
+		  }
+
+		  new RecordeFrame(message.toString());
+		  
+	    }
 	
     private void atualizarTabuleiro() {
         for (int linha = 0; linha < tamanhoTabuleiro; linha++) {
