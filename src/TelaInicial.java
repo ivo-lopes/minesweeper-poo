@@ -71,7 +71,7 @@ public class TelaInicial extends JFrame{
 
     private void iniciarJogo(int tamanhoTabuleiro, int numMinas, String nomeJogador) {
     	SwingUtilities.invokeLater(() -> { 
-            new CampoMinadoGUI(tamanhoTabuleiro, numMinas, nomeJogador); // Create GUI with the initialized campoMinado
+            new CampoMinadoGUI(tamanhoTabuleiro, numMinas, nomeJogador); 
         });
     }
 
