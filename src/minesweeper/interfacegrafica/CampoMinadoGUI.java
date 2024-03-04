@@ -3,6 +3,8 @@ package minesweeper.interfacegrafica;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -25,6 +27,9 @@ public class CampoMinadoGUI {
     private Timer timer;
     private int tempoPassado;
     private JLabel timerLabel;
+    private List<Recorde> recordes;
+    private ListaRecordes listaRecordes = new ListaRecordes();
+
 
     public CampoMinadoGUI(int tamanhoDoCampo, int numeroDeMinas) {
         this.tamanhoDoCampo = tamanhoDoCampo;
@@ -42,6 +47,7 @@ public class CampoMinadoGUI {
         minas = new char[tamanhoDoCampo][tamanhoDoCampo];
         revelado = new boolean[tamanhoDoCampo][tamanhoDoCampo];
         bandeiras = new boolean[tamanhoDoCampo][tamanhoDoCampo];
+        recordes = new ArrayList<>();
 
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         frame.setLayout(new BorderLayout());
@@ -109,6 +115,8 @@ public class CampoMinadoGUI {
                 voltarMenuPrincipal();
             }
         });
+
+        recordes = carregarRecordes();
     }
 
     private void voltarMenuPrincipal() {
@@ -273,5 +281,32 @@ public class CampoMinadoGUI {
     private void gameWon() {
         pararTemporizador();
         JOptionPane.showMessageDialog(frame, "Parabéns! Você venceu o jogo.", "Vitória", JOptionPane.INFORMATION_MESSAGE);
+        atualizarRecordes(tempoPassado);
+        Recorde recorde = new Recorde("", tempoPassado);
+        recorde.solicitarNome();
+        listaRecordes.adicionarRecorde(recorde);
+    }
+
+    private List<Recorde> carregarRecordes() {
+        // Lógica para carregar os recordes salvos de um arquivo ou outro meio de armazenamento
+        // Retorna uma lista de recordes
+        return new ArrayList<>(); // Temporário - substitua isso pela lógica real de carregamento
+    }
+
+    private void salvarRecordes() {
+        // Lógica para salvar os recordes atualizados em um arquivo ou outro meio de armazenamento
+    }
+
+    private void atualizarRecordes(int tempo) {
+        // Verifica se o tempo do jogador vencedor é menor que o tempo dos 10 melhores recordes
+        for (Recorde recorde : recordes) {
+            if (tempo < recorde.getTempo()) {
+                String nome = JOptionPane.showInputDialog("Parabéns! Você quebrou um recorde!\nDigite seu nome:");
+                recordes.add(recordes.indexOf(recorde), new Recorde(nome, tempo));
+                recordes.remove(recordes.size() - 1); // Remove o recorde mais baixo da lista
+                salvarRecordes(); // Salva os recordes atualizados
+                return;
+            }
+        }
     }
 }

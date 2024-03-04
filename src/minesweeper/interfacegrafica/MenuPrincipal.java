@@ -4,12 +4,17 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
+import java.util.ArrayList;
 
 public class MenuPrincipal extends JFrame {
     private JPanel panel;
+    private JLabel tituloLabel;
     private JButton jogarButton;
     private JButton opcoesButton;
     private JButton sairButton;
+    private List<Recorde> recordes;
+    private JButton recordesButton;
 
     public MenuPrincipal() {
         setTitle("Menu Principal");
@@ -18,7 +23,12 @@ public class MenuPrincipal extends JFrame {
         setLocationRelativeTo(null);
 
         panel = new JPanel();
-        panel.setLayout(new GridLayout(3, 1)); // Adicionando espaçamento entre os botões
+        panel.setLayout(new GridLayout(5, 1)); // Adicionando espaçamento entre os botões
+
+        tituloLabel = new JLabel("Campo Minado");
+        tituloLabel.setFont(new Font("Arial", Font.BOLD, 24)); // Define a fonte em negrito e o tamanho grande
+        tituloLabel.setHorizontalAlignment(SwingConstants.CENTER); // Centraliza o texto horizontalmente
+        panel.add(tituloLabel);
 
         jogarButton = new JButton("Jogar");
         jogarButton.setPreferredSize(new Dimension(200, 50)); // Reduzindo o tamanho do botão
@@ -38,6 +48,15 @@ public class MenuPrincipal extends JFrame {
         });
         panel.add(opcoesButton);
 
+        recordesButton = new JButton("Recordes");
+        recordesButton.setPreferredSize(new Dimension(200, 50));
+        recordesButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                exibirRecordes();
+            }
+        });
+        panel.add(recordesButton);
+
         sairButton = new JButton("Sair");
         sairButton.setPreferredSize(new Dimension(200, 50)); // Reduzindo o tamanho do botão
         sairButton.addActionListener(new ActionListener() {
@@ -47,8 +66,30 @@ public class MenuPrincipal extends JFrame {
         });
         panel.add(sairButton);
 
+        recordes = new ArrayList<>();
+        inicializarRecordes(); // Inicializa a lista de recordes
+
         add(panel);
         setVisible(true);
+    }
+
+    private void inicializarRecordes() {
+        for (int i = 0; i < 10; i++) {
+            recordes.add(new Recorde("--", 0)); // Adiciona 10 recordes vazios inicialmente
+        }
+    }
+
+    private void exibirRecordes() {
+        // Implementar a lógica para exibir os recordes em uma nova janela
+        JOptionPane.showMessageDialog(this, "Lista de Recordes:\n" + formatarRecordes(), "Recordes", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private String formatarRecordes() {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < recordes.size(); i++) {
+            builder.append((i + 1) + ". " + recordes.get(i).getNome() + ": " + recordes.get(i).getTempo() + " segundos\n");
+        }
+        return builder.toString();
     }
 
     private void exibirOpcoes() {
@@ -77,8 +118,10 @@ public class MenuPrincipal extends JFrame {
         voltarButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 panel.removeAll();
-                panel.setLayout(new GridLayout(3, 1));
+                panel.setLayout(new GridLayout(5, 1));
+                panel.add(tituloLabel);
                 panel.add(jogarButton);
+                panel.add(recordesButton);
                 panel.add(opcoesButton);
                 panel.add(sairButton);
                 setTitle("Menu Principal");
@@ -128,7 +171,16 @@ public class MenuPrincipal extends JFrame {
         JButton voltarButton = new JButton("Voltar");
         voltarButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                exibirOpcoes();
+                panel.removeAll();
+                panel.setLayout(new GridLayout(5, 1));
+                panel.add(tituloLabel);
+                panel.add(jogarButton);
+                panel.add(recordesButton);
+                panel.add(opcoesButton);
+                panel.add(sairButton);
+                setTitle("Menu Principal");
+                revalidate();
+                repaint();
             }
         });
         panel.add(voltarButton);
