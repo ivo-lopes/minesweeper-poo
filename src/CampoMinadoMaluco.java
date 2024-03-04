@@ -9,12 +9,12 @@ import minesweeper.celulas.CelulaBomba;
 public class CampoMinadoMaluco extends CampoMinado {
 	
 
-	public CampoMinadoMaluco(int tamanhoTabuleiro, int numMinas) {
+	public CampoMinadoMaluco(int tamanhoTabuleiro, int numMinas, int numMinasMalucas) {
 		super(tamanhoTabuleiro, numMinas);
+		iniciarJogoMaluco();
 	}
 	
 	public void iniciarJogoMaluco() {
-		    // Inicializa o tabuleiro com células vazias e sem bombas
 		    for (int linha = 0; linha < tamanhoTabuleiro; linha++) {
 		        for (int coluna = 0; coluna < tamanhoTabuleiro; coluna++) {
 		            tabuleiro[linha][coluna] = new CelulaVazia();
@@ -30,16 +30,17 @@ public class CampoMinadoMaluco extends CampoMinado {
 		        int linha = random.nextInt(tamanhoTabuleiro);
 		        int coluna = random.nextInt(tamanhoTabuleiro);
 
-		        if (!(tabuleiro[linha][coluna].isBomba()) && celulasMalucasRestantes > 0) {
-		            tabuleiro[linha][coluna] = new CelulaMaluca();
-		            celulasMalucasRestantes--;
-		        } else if (!(tabuleiro[linha][coluna].isBomba())) {
-		            tabuleiro[linha][coluna] = new CelulaBomba();
-		            minasRestantes--;
+		        if (!(tabuleiro[linha][coluna].isBomba())) {
+		        	if (celulasMalucasRestantes > 0 && random.nextBoolean()) {
+			            tabuleiro[linha][coluna] = new CelulaMaluca();
+			            celulasMalucasRestantes--;
+			        } else if (minasRestantes > 0) {
+			            tabuleiro[linha][coluna] = new CelulaBomba();
+			            minasRestantes--;
+			        }
 		        }
 		    }
 
-		    // Agora, calcula os valores das células vizinhas
 		    for (int linha = 0; linha < tamanhoTabuleiro; linha++) {
 		        for (int coluna = 0; coluna < tamanhoTabuleiro; coluna++) {
 		            if (tabuleiro[linha][coluna] instanceof CelulaVazia) {
@@ -50,7 +51,6 @@ public class CampoMinadoMaluco extends CampoMinado {
 		    }
 		}
 
-		// Método auxiliar para calcular o valor das células vizinhas
 		public int calcularValorVizinhos(int linha, int coluna) {
 		    int valor = 0;
 		    for (int i = -1; i <= 1; i++) {
@@ -73,6 +73,13 @@ public class CampoMinadoMaluco extends CampoMinado {
         Celula celula = tabuleiro[linha][coluna];
 
         if (celula.isAberta()) {
+        	if(celula instanceof CelulaMaluca) {
+        		CelulaMaluca celulaMaluca = (CelulaMaluca) celula;
+        		if(!(celulaMaluca.isBomba())) {
+        			celulaMaluca.setBomba(true);
+        			verificarDerrota();
+        		}
+        	}
             return;
         }
 
@@ -80,17 +87,14 @@ public class CampoMinadoMaluco extends CampoMinado {
             CelulaMaluca celulaMaluca = (CelulaMaluca) celula;
             
             if (celulaMaluca.isBomba()) {
-                // Se a célula maluca for uma bomba e o usuário a marcar, ela se torna uma célula vazia
                 celulaMaluca.setBomba(false);
                 celulaMaluca.setAberta(true);
                 atualizarVizinhos(linha, coluna);
             } else {
-                // Se a célula maluca não for uma bomba, comportamento padrão de marcação
                 celulaMaluca.alterarEstado();
                 alterarVizinhos(linha, coluna);
             }
         } else {
-            // Se não for uma célula maluca, comportamento padrão de marcação
             super.marcarCelula(linha, coluna);
         }
     }
@@ -111,7 +115,6 @@ public class CampoMinadoMaluco extends CampoMinado {
         }
     }
     
-    // Método para notificar os vizinhos sobre a alteração na célula maluca
     private void atualizarVizinhos(int linha, int coluna) {
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
@@ -124,10 +127,8 @@ public class CampoMinadoMaluco extends CampoMinado {
                     if (vizinho instanceof CelulaVazia) {
                         CelulaVazia celulaVazia = (CelulaVazia) vizinho;
 
-                        // Adicione a lógica para calcular o novo valor aqui
                         int novoValor = calcularValorVizinhos(novaLinha, novaColuna);
 
-                        // Atualize o valor na célula vazia vizinha
                         celulaVazia.atualizarValor(novoValor);
                     }
                 }
@@ -138,6 +139,7 @@ public class CampoMinadoMaluco extends CampoMinado {
     @Override
     public void reiniciarJogo() {
         super.reiniciarJogo();
+        iniciarJogoMaluco();
     }
 }
 
