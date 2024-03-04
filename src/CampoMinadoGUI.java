@@ -1,15 +1,16 @@
 package minesweeper.tabuleiro;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-//import java.util.ArrayList;
-//import java.util.Collections;
-//import java.util.Comparator;
 import java.util.List;
-//import java.util.PriorityQueue;
 
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -20,7 +21,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
-
 import minesweeper.celulas.Celula;
 import minesweeper.celulas.CelulaVazia;
 import minesweeper.niveis.*;
@@ -40,8 +40,16 @@ public class CampoMinadoGUI extends JFrame implements Tabuleiro{
 	private JComboBox<String> comboBoxDificuldade;
 	private String nomeJogador;
 	private Recorde recorde;
+	
+	private static final Color COR_CELULA_FECHADA = new Color(200, 200, 200);
+    //private static final Color COR_CELULA_ABERTA = new Color(160, 160, 160);
+    private static final Color COR_MARGEM = new Color(140, 140, 140);
 
-
+    ImageIcon bandeiraIcon = new ImageIcon(getClass().getResource("/imagens/red-flag.png"));
+    Image imagemRedimensionada = bandeiraIcon.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
+    ImageIcon bandeiraIcon2 = new ImageIcon(imagemRedimensionada);
+    ImageIcon bombaIcon = new ImageIcon(getClass().getResource("/imagens/icons8-mina-naval-48.png"));
+   
     public CampoMinadoGUI(int tamanhoTabuleiro, int numMinas, String nomeJogador) {
     	this.nomeJogador = nomeJogador;
         this.tamanhoTabuleiro = tamanhoTabuleiro;
@@ -53,7 +61,6 @@ public class CampoMinadoGUI extends JFrame implements Tabuleiro{
         comboBoxDificuldade = new JComboBox<>(niveis);
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(comboBoxDificuldade, BorderLayout.WEST);
-
         comboBoxDificuldade.addActionListener(e ->  configurarJogo());
       
         timer = new JLabel("Tempo: ");
@@ -72,7 +79,7 @@ public class CampoMinadoGUI extends JFrame implements Tabuleiro{
         
         setTitle("Campo Minado");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(400, 400);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
         JPanel gamePanel = new JPanel(new GridLayout(tamanhoTabuleiro, tamanhoTabuleiro));
         panel.add(gamePanel, BorderLayout.CENTER);
         criarBotoes(gamePanel);
@@ -115,7 +122,19 @@ public class CampoMinadoGUI extends JFrame implements Tabuleiro{
     private void instanciaJogo() {
     try {
         if (campoMinadoMalucoAtivo) {
-        	CampoMinadoMaluco campoMinadoMaluco = new CampoMinadoMaluco(tamanhoTabuleiro, numMinas);
+        	int numMinasMalucas = 0;
+            switch (tamanhoTabuleiro) {
+                case 8:
+                    numMinasMalucas = 10;
+                    break;
+                case 16: 
+                    numMinasMalucas = 20;
+                    break;
+                case 24: 
+                    numMinasMalucas = 30;
+                    break;
+            }
+        	CampoMinadoMaluco campoMinadoMaluco = new CampoMinadoMaluco(tamanhoTabuleiro, numMinas, numMinasMalucas);
             campoMinado = campoMinadoMaluco;
             campoMinadoMaluco.iniciarJogoMaluco();
            
@@ -176,6 +195,7 @@ public class CampoMinadoGUI extends JFrame implements Tabuleiro{
         for (int linha = 0; linha < tamanhoTabuleiro; linha++) {
             for (int coluna = 0; coluna < tamanhoTabuleiro; coluna++) {
                 JButton botao = new JButton();
+                botao.setBorder(BorderFactory.createLineBorder(COR_MARGEM, 2)); 
                 botoes[linha][coluna] = botao;
                 final int finalLinha = linha;
                 final int finalColuna = coluna;
@@ -187,6 +207,11 @@ public class CampoMinadoGUI extends JFrame implements Tabuleiro{
                         	if(!celulaClicada.isAberta()) {
                         		celulaClicada.setMarcada(!celulaClicada.isMarcada());
                         		SwingUtilities.invokeLater(() -> atualizarTabuleiro());
+                        		if (celulaClicada.isMarcada()) {
+                                    botao.setIcon(bandeiraIcon);
+                                } else {
+                                    botao.setIcon(null);
+                                }
                         	}
                         }else if (SwingUtilities.isLeftMouseButton(e) && !celulaClicada.isAberta()) {
                         	campoMinado.abrirCelula(finalLinha, finalColuna);
@@ -200,6 +225,7 @@ public class CampoMinadoGUI extends JFrame implements Tabuleiro{
               gamePanel.add(botao);
             }
         }
+        
         gamePanel.revalidate();
         gamePanel.repaint();
         
@@ -210,13 +236,13 @@ public class CampoMinadoGUI extends JFrame implements Tabuleiro{
             campoMinado.revelarTabuleiro();
             jogoEncerrado = true;
             gameTimer.pararTimer();
-            JOptionPane.showMessageDialog(null, "Você perdeu!");
+            JOptionPane.showMessageDialog(null, "<html><center><font size='5' color='red'>Você perdeu! 😞</font></center></html>", "Fim de Jogo", JOptionPane.PLAIN_MESSAGE);
             salvarPontuacao(nomeJogador, gameTimer.getTempoDecorrido(), false);
             exibirRecorde();
         } else if (campoMinado.verificarVitoria()) {
             jogoEncerrado = true;
             gameTimer.pararTimer();
-            JOptionPane.showMessageDialog(null, "Você venceu!");
+            JOptionPane.showMessageDialog(null, "<html><center><font size='5' color='green'>Parabéns, você venceu! 🎉</font></center></html>", "Fim de Jogo", JOptionPane.PLAIN_MESSAGE);
             salvarPontuacao(nomeJogador, gameTimer.getTempoDecorrido(), true);
             exibirRecorde();
         }
@@ -240,23 +266,26 @@ public class CampoMinadoGUI extends JFrame implements Tabuleiro{
 	        setLocationRelativeTo(null); 
 
 	        JTextArea textArea = new JTextArea();
-	        textArea.setEditable(false); 
+	        textArea.setEditable(false);
+	        textArea.setFont(new Font("Arial", Font.BOLD, 14)); 
 
 	        JScrollPane scrollPane = new JScrollPane(textArea);
 	        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-	        
 
 	        textArea.setText(mensagem);
 	        getContentPane().add(scrollPane, BorderLayout.CENTER);
+	        
+	        getContentPane().setBackground(new Color(240, 240, 240)); 
+	        //textArea.setBackground(Color.LIGHT_GRAY); // Cor de fundo da área de texto
+	        textArea.setForeground(new Color(159, 125, 74));
 
 	        setVisible(true);
-	        
 	    }
 	}
 	private void exibirRecorde() {
 		List<Pontuacao> top10 = recorde.getTop10Pontuacoes();
 		  
-		  StringBuilder message = new StringBuilder("Top 10 Pontuações:\n");
+		  StringBuilder message = new StringBuilder("Top 10 Menores Tempos:\n");
 
 		  for(int i = 0; i < top10.size(); i++) {
 		    Pontuacao pontuacao = top10.get(i);
@@ -278,20 +307,36 @@ public class CampoMinadoGUI extends JFrame implements Tabuleiro{
                     verificarFimDeJogo();
                 } else if (celula.isAberta()) {
                 	botao.setEnabled(false);
+                	botao.setBackground(null);
                     if (celula.isBomba()) {
-                        botao.setText("X"); 
+                    	botao.setIcon(bombaIcon);
                     } else if (celula instanceof CelulaVazia) {
                         int valor = ((CelulaVazia) celula).getValor();
+                        switch (valor) {
+            			case 1:
+            				botao.setForeground(Color.GREEN); break;
+            			case 2:
+            				botao.setForeground(Color.BLUE); break;
+            			case 3:
+            				botao.setForeground(Color.YELLOW); break;
+            			case 4: case 5: case 6:
+            				botao.setForeground(Color.RED); break;
+            			default:
+            				botao.setForeground(Color.PINK);
+            		}
                         if (valor > 0) {
                             botao.setText(String.valueOf(valor));
+                            botao.setFont(botao.getFont().deriveFont(20f));
                         } else {
                             botao.setText(""); 
                         }
                     }
                 } else if (celula.isMarcada()) {
-                	botao.setText("M");
+                	botao.setIcon(bandeiraIcon2);
                 } else {
                     botao.setText("");
+                    botao.setBackground(COR_CELULA_FECHADA);
+                    
                 }
             }
         }
@@ -326,7 +371,11 @@ public class CampoMinadoGUI extends JFrame implements Tabuleiro{
 
 	@Override
 	public boolean verificarVitoria() {
-		return campoMinado.verificarVitoria();
+		boolean vitoria = campoMinado.verificarVitoria();
+	    if (vitoria && campoMinadoMalucoAtivo) {
+	        revelarTabuleiro();
+	    }
+	    return vitoria;
 	}
 
 	@Override
@@ -345,6 +394,11 @@ public class CampoMinadoGUI extends JFrame implements Tabuleiro{
 	public void abrirCelula(int linha, int coluna) {
 		campoMinado.abrirCelula(linha, coluna);
 	    atualizarTabuleiro();
+
+	    SwingUtilities.invokeLater(() -> {
+	        atualizarTabuleiro();
+	        verificarFimDeJogo();
+	    });
 		
 	}
 
@@ -362,4 +416,3 @@ public class CampoMinadoGUI extends JFrame implements Tabuleiro{
 	}
 
 }
-
