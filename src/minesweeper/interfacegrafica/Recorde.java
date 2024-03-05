@@ -50,6 +50,10 @@ public class Recorde implements Comparable<Recorde> {
         this.index = index;
     }
 
+    public int getIndex() { // Método para obter o índice do recorde na lista
+        return index;
+    }
+
     @Override
     public String toString() {
         return String.format("%d. %s: %d segundos", index, nome, tempo);

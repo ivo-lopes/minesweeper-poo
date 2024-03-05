@@ -3,8 +3,6 @@ package minesweeper.interfacegrafica;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Random;
@@ -29,6 +27,7 @@ public class CampoMinadoGUI {
     private Timer timer;
     private int tempoPassado;
     private JLabel timerLabel;
+    @SuppressWarnings("unused")
     private List<Recorde> recordes;
     private ListaRecordes listaRecordes = new ListaRecordes();
 

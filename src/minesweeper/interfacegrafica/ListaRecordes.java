@@ -8,6 +8,7 @@ import java.util.List;
 public class ListaRecordes {
     private static final int MAX_RECORDS = 10;
     private List<Recorde> recordes;
+    @SuppressWarnings("unused")
     private int indice;
     private static final String FILE_PATH = "src/minesweeper/recordlist.txt"; // Alteração: Caminho do arquivo
 
@@ -18,13 +19,27 @@ public class ListaRecordes {
     }
 
     public void adicionarRecorde(Recorde recorde) {
-        recorde.setIndex(indice++);
         recordes.add(recorde);
+        ordenarRecordes();
+        limitarRecordes();
+        atribuirIndices();
+        salvarRecordes();
+    }
+
+    private void ordenarRecordes() {
         Collections.sort(recordes);
+    }
+
+    private void limitarRecordes() {
         if (recordes.size() > MAX_RECORDS) {
             recordes = recordes.subList(0, MAX_RECORDS);
         }
-        salvarRecordes();
+    }
+
+    private void atribuirIndices() {
+        for (int i = 0; i < recordes.size(); i++) {
+            recordes.get(i).setIndex(i + 1);
+        }
     }
 
     public List<Recorde> getRecordes() {
@@ -36,14 +51,13 @@ public class ListaRecordes {
         try (BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                String[] parts = line.split("\\s+"); // Dividindo a linha por espaços em branco
-                if (parts.length >= 2) {
-                    String nome = parts[0];
-                    int tempo = Integer.parseInt(parts[1]);
-                    recordes.add(new Recorde(nome, tempo));
+                String[] parts = line.split("\\s+");
+                if (parts.length >= 3) {
+                    String nome = parts[1];
+                    int tempo = Integer.parseInt(parts[2]);
+                    recordes.add(new Recorde(nome, tempo)); // Corrigido aqui
                 }
             }
-            // Ordena os recordes com base no tempo (menor tempo primeiro)
             Collections.sort(recordes);
         } catch (IOException e) {
             e.printStackTrace();
@@ -53,7 +67,7 @@ public class ListaRecordes {
     private void salvarRecordes() {
         try (PrintWriter writer = new PrintWriter(new FileWriter(FILE_PATH))) {
             for (Recorde recorde : recordes) {
-                writer.println(recorde.getNome() + " " + recorde.getTempo());
+                writer.println(recorde.getIndex() + " " + recorde.getNome() + " " + recorde.getTempo());
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -63,13 +77,10 @@ public class ListaRecordes {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < recordes.size(); i++) {
-            sb.append(recordes.get(i).toString());
-            if (i < recordes.size() - 1) {
-                sb.append("\n");
-            }
+        sb.append("Lista de Recordes:\n");
+        for (Recorde recorde : recordes) {
+            sb.append(recorde.getIndex()).append(". ").append(recorde.getNome()).append(": ").append(recorde.getTempo()).append(" segundos\n");
         }
         return sb.toString();
-    }
-    
+    }   
 }

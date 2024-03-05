@@ -16,6 +16,7 @@ public class MenuPrincipal extends JFrame {
     private JButton jogarButton;
     private JButton opcoesButton;
     private JButton sairButton;
+    @SuppressWarnings("unused")
     private List<Recorde> recordes;
     private JButton recordesButton;
 
