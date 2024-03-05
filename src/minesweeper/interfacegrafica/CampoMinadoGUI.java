@@ -285,7 +285,7 @@ public class CampoMinadoGUI {
         JOptionPane.showMessageDialog(frame, "Parabéns! Você venceu o jogo.", "Vitória", JOptionPane.INFORMATION_MESSAGE);
         Recorde recorde = new Recorde("", tempoPassado);
         recorde.solicitarNome();
-        atualizarRecordes(recorde); // Adicione esta linha para atualizar os recordes
+        listaRecordes.adicionarRecorde(recorde); // Alteração: Adiciona o novo recorde à lista de recordes
     }
 
     private List<Recorde> carregarRecordes() {
@@ -294,30 +294,6 @@ public class CampoMinadoGUI {
         return new ArrayList<>(); // Temporário - substitua isso pela lógica real de carregamento
     }
 
-    private void salvarRecordes() {
-        try (FileWriter writer = new FileWriter("src/minesweeper/recordlist.txt")) {
-            for (Recorde recorde : recordes) {
-                writer.write(recorde.getNome() + ":" + recorde.getTempo() + "\n");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(frame, "Erro ao salvar os recordes.", "Erro", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    private void atualizarRecordes(Recorde novoRecorde) {
-        for (int i = 0; i < recordes.size(); i++) {
-            Recorde recordeAtual = recordes.get(i);
-            if (novoRecorde.getTempo() < recordeAtual.getTempo()) {
-                String nome = JOptionPane.showInputDialog("Parabéns! Você quebrou um recorde!\nDigite seu nome:");
-                novoRecorde.setNome(nome);
-                recordes.add(i, novoRecorde);
-                recordes.remove(recordes.size() - 1); // Remove o recorde mais baixo da lista
-                salvarRecordes();
-                return;
-            }
-        }
-    }
 
     public void exibirRecordes() {
         List<Recorde> recordes = listaRecordes.getRecordes();

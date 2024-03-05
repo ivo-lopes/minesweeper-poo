@@ -3,6 +3,7 @@ package minesweeper.interfacegrafica;
 import javax.swing.JOptionPane;
 
 public class Recorde implements Comparable<Recorde> {
+    private int index;
     private String nome;
     private int tempo;
 
@@ -43,5 +44,14 @@ public class Recorde implements Comparable<Recorde> {
     public int compareTo(Recorde outroRecorde) {
         // Comparar os recordes com base no tempo
         return Integer.compare(this.tempo, outroRecorde.tempo);
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%d. %s: %d segundos", index, nome, tempo);
     }
 }
