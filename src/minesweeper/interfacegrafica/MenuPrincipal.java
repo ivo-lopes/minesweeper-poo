@@ -27,24 +27,24 @@ public class MenuPrincipal extends JFrame {
         setLocationRelativeTo(null);
 
         panel = new JPanel();
-        panel.setLayout(new GridLayout(5, 1)); // Adicionando espaçamento entre os botões
+        panel.setLayout(new GridLayout(5, 1));
 
         tituloLabel = new JLabel("Campo Minado");
-        tituloLabel.setFont(new Font("Arial", Font.BOLD, 24)); // Define a fonte em negrito e o tamanho grande
-        tituloLabel.setHorizontalAlignment(SwingConstants.CENTER); // Centraliza o texto horizontalmente
+        tituloLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        tituloLabel.setHorizontalAlignment(SwingConstants.CENTER);
         panel.add(tituloLabel);
 
         jogarButton = new JButton("Jogar");
-        jogarButton.setPreferredSize(new Dimension(200, 50)); // Reduzindo o tamanho do botão
+        jogarButton.setPreferredSize(new Dimension(200, 50)); 
         jogarButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                exibirDificuldades(); // Mudança: Chama a exibição das dificuldades ao invés de ir direto ao jogo
+                exibirDificuldades(); 
             }
         });
         panel.add(jogarButton);
 
         opcoesButton = new JButton("Opções");
-        opcoesButton.setPreferredSize(new Dimension(200, 50)); // Reduzindo o tamanho do botão
+        opcoesButton.setPreferredSize(new Dimension(200, 50)); 
         opcoesButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 exibirOpcoes();
@@ -62,7 +62,7 @@ public class MenuPrincipal extends JFrame {
         panel.add(recordesButton);
 
         sairButton = new JButton("Sair");
-        sairButton.setPreferredSize(new Dimension(200, 50)); // Reduzindo o tamanho do botão
+        sairButton.setPreferredSize(new Dimension(200, 50)); 
         sairButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 System.exit(0);
@@ -96,12 +96,12 @@ public class MenuPrincipal extends JFrame {
         setTitle("Opções");
 
         panel.removeAll();
-        panel.setLayout(new GridLayout(3, 1)); // Alterado de 5 para 4
+        panel.setLayout(new GridLayout(3, 1)); 
 
         JButton modoButton = new JButton("Modo");
         modoButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // Implementar ação para escolher o modo de jogo
+                // Implementar ação para escolher o modo de jogo entre normal e maluco
             }
         });
         panel.add(modoButton);
@@ -139,13 +139,13 @@ public class MenuPrincipal extends JFrame {
         setTitle("Dificuldade");
 
         panel.removeAll();
-        panel.setLayout(new GridLayout(4, 1)); // Alterado de 5 para 4
+        panel.setLayout(new GridLayout(4, 1));
 
         JButton facilButton = new JButton("Fácil");
         facilButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 dispose();
-                new CampoMinadoGUI(9, 10); // Nível fácil
+                new CampoMinadoGUI(9, 10); 
             }
         });
         panel.add(facilButton);
@@ -154,7 +154,7 @@ public class MenuPrincipal extends JFrame {
         medioButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 dispose();
-                new CampoMinadoGUI(16, 40); // Nível médio
+                new CampoMinadoGUI(13, 20);
             }
         });
         panel.add(medioButton);
@@ -163,7 +163,7 @@ public class MenuPrincipal extends JFrame {
         dificilButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 dispose();
-                new CampoMinadoGUI(20, 80); // Nível difícil
+                new CampoMinadoGUI(17, 30);
             }
         });
         panel.add(dificilButton);
@@ -190,6 +190,6 @@ public class MenuPrincipal extends JFrame {
     }
 
     private void exibirSobre() {
-        JOptionPane.showMessageDialog(this, "Texto genérico sobre lontras.", "Sobre", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, "Projeto de POO.\nFeito por Ivo Lopes.", "Sobre", JOptionPane.INFORMATION_MESSAGE);
     }
 }

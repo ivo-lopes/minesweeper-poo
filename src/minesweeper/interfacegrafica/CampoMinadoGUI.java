@@ -53,7 +53,7 @@ public class CampoMinadoGUI {
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         frame.setLayout(new BorderLayout());
         frame.setSize(600, 600);
-        frame.setLocationRelativeTo(null); // Centraliza a janela
+        frame.setLocationRelativeTo(null);
 
         bandeirasLabel = new JLabel("Bandeiras Restantes: " + bandeirasRestantes);
         bandeirasLabel.setFont(new Font("Arial", Font.BOLD, 16));
@@ -284,13 +284,11 @@ public class CampoMinadoGUI {
         JOptionPane.showMessageDialog(frame, "Parabéns! Você venceu o jogo.", "Vitória", JOptionPane.INFORMATION_MESSAGE);
         Recorde recorde = new Recorde("", tempoPassado);
         recorde.solicitarNome();
-        listaRecordes.adicionarRecorde(recorde); // Alteração: Adiciona o novo recorde à lista de recordes
+        listaRecordes.adicionarRecorde(recorde);
     }
 
     private List<Recorde> carregarRecordes() {
-        // Lógica para carregar os recordes salvos de um arquivo ou outro meio de armazenamento
-        // Retorna uma lista de recordes
-        return new ArrayList<>(); // Temporário - substitua isso pela lógica real de carregamento
+        return new ArrayList<>();
     }
 
 

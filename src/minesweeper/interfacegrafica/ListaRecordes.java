@@ -10,7 +10,7 @@ public class ListaRecordes {
     private List<Recorde> recordes;
     @SuppressWarnings("unused")
     private int indice;
-    private static final String FILE_PATH = "src/minesweeper/recordlist.txt"; // Alteração: Caminho do arquivo
+    private static final String FILE_PATH = "src/minesweeper/recordlist.txt"; 
 
     public ListaRecordes() {
         this.recordes = new ArrayList<>();
@@ -55,7 +55,7 @@ public class ListaRecordes {
                 if (parts.length >= 3) {
                     String nome = parts[1];
                     int tempo = Integer.parseInt(parts[2]);
-                    recordes.add(new Recorde(nome, tempo)); // Corrigido aqui
+                    recordes.add(new Recorde(nome, tempo));
                 }
             }
             Collections.sort(recordes);

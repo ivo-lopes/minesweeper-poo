@@ -12,27 +12,22 @@ public class Recorde implements Comparable<Recorde> {
         this.tempo = tempo;
     }
 
-    // Getter para o nome
     public String getNome() {
         return nome;
     }
 
-    // Setter para o nome
     public void setNome(String nome) {
         this.nome = nome;
     }
 
-    // Getter para o tempo
     public int getTempo() {
         return tempo;
     }
 
-    // Setter para o tempo
     public void setTempo(int tempo) {
         this.tempo = tempo;
     }
 
-    // Método para solicitar o nome do usuário
     public void solicitarNome() {
         String nome = JOptionPane.showInputDialog(null, "Parabéns! Você venceu o jogo. Por favor, insira seu nome:", "Registro de Recorde", JOptionPane.PLAIN_MESSAGE);
         if (nome != null && !nome.isEmpty()) {
@@ -42,7 +37,6 @@ public class Recorde implements Comparable<Recorde> {
 
     @Override
     public int compareTo(Recorde outroRecorde) {
-        // Comparar os recordes com base no tempo
         return Integer.compare(this.tempo, outroRecorde.tempo);
     }
 
@@ -50,7 +44,7 @@ public class Recorde implements Comparable<Recorde> {
         this.index = index;
     }
 
-    public int getIndex() { // Método para obter o índice do recorde na lista
+    public int getIndex() {
         return index;
     }
 
