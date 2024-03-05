@@ -3,6 +3,8 @@ package minesweeper.interfacegrafica;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Random;
@@ -281,10 +283,9 @@ public class CampoMinadoGUI {
     private void gameWon() {
         pararTemporizador();
         JOptionPane.showMessageDialog(frame, "Parabéns! Você venceu o jogo.", "Vitória", JOptionPane.INFORMATION_MESSAGE);
-        atualizarRecordes(tempoPassado);
         Recorde recorde = new Recorde("", tempoPassado);
         recorde.solicitarNome();
-        listaRecordes.adicionarRecorde(recorde);
+        atualizarRecordes(recorde); // Adicione esta linha para atualizar os recordes
     }
 
     private List<Recorde> carregarRecordes() {
@@ -294,19 +295,37 @@ public class CampoMinadoGUI {
     }
 
     private void salvarRecordes() {
-        // Lógica para salvar os recordes atualizados em um arquivo ou outro meio de armazenamento
+        try (FileWriter writer = new FileWriter("src/minesweeper/recordlist.txt")) {
+            for (Recorde recorde : recordes) {
+                writer.write(recorde.getNome() + ":" + recorde.getTempo() + "\n");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(frame, "Erro ao salvar os recordes.", "Erro", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
-    private void atualizarRecordes(int tempo) {
-        // Verifica se o tempo do jogador vencedor é menor que o tempo dos 10 melhores recordes
-        for (Recorde recorde : recordes) {
-            if (tempo < recorde.getTempo()) {
+    private void atualizarRecordes(Recorde novoRecorde) {
+        for (int i = 0; i < recordes.size(); i++) {
+            Recorde recordeAtual = recordes.get(i);
+            if (novoRecorde.getTempo() < recordeAtual.getTempo()) {
                 String nome = JOptionPane.showInputDialog("Parabéns! Você quebrou um recorde!\nDigite seu nome:");
-                recordes.add(recordes.indexOf(recorde), new Recorde(nome, tempo));
+                novoRecorde.setNome(nome);
+                recordes.add(i, novoRecorde);
                 recordes.remove(recordes.size() - 1); // Remove o recorde mais baixo da lista
-                salvarRecordes(); // Salva os recordes atualizados
+                salvarRecordes();
                 return;
             }
+        }
+    }
+
+    public void exibirRecordes() {
+        List<Recorde> recordes = listaRecordes.getRecordes();
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("Lista de Recordes:\n");
+        for (Recorde recorde : recordes) {
+            sb.append(recorde.getNome()).append(" - ").append(recorde.getTempo()).append(" segundos\n");
         }
     }
 }

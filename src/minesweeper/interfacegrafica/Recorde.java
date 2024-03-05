@@ -40,8 +40,8 @@ public class Recorde implements Comparable<Recorde> {
     }
 
     @Override
-    public int compareTo(Recorde o) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'compareTo'");
+    public int compareTo(Recorde outroRecorde) {
+        // Comparar os recordes com base no tempo
+        return Integer.compare(this.tempo, outroRecorde.tempo);
     }
 }

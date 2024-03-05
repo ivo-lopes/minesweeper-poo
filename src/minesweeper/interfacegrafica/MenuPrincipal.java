@@ -4,6 +4,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -67,29 +70,25 @@ public class MenuPrincipal extends JFrame {
         panel.add(sairButton);
 
         recordes = new ArrayList<>();
-        inicializarRecordes(); // Inicializa a lista de recordes
 
         add(panel);
         setVisible(true);
     }
 
-    private void inicializarRecordes() {
-        for (int i = 0; i < 10; i++) {
-            recordes.add(new Recorde("--", 0)); // Adiciona 10 recordes vazios inicialmente
-        }
-    }
 
     private void exibirRecordes() {
-        // Implementar a lógica para exibir os recordes em uma nova janela
-        JOptionPane.showMessageDialog(this, "Lista de Recordes:\n" + formatarRecordes(), "Recordes", JOptionPane.INFORMATION_MESSAGE);
-    }
-
-    private String formatarRecordes() {
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < recordes.size(); i++) {
-            builder.append((i + 1) + ". " + recordes.get(i).getNome() + ": " + recordes.get(i).getTempo() + " segundos\n");
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader("src/minesweeper/recordlist.txt"));
+            String linha;
+            StringBuilder conteudo = new StringBuilder();
+            while ((linha = reader.readLine()) != null) {
+                conteudo.append(linha).append("\n");
+            }
+            reader.close();
+            JOptionPane.showMessageDialog(this, conteudo.toString(), "Recordes", JOptionPane.INFORMATION_MESSAGE);
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Erro ao ler o arquivo de recordes.", "Erro", JOptionPane.ERROR_MESSAGE);
         }
-        return builder.toString();
     }
 
     private void exibirOpcoes() {
